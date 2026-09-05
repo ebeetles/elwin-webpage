@@ -15,6 +15,8 @@
   /* ============================================================
      DESIGN TOKENS — "Press" (warm editorial, locked)
      ============================================================ */
+
+  /* worked with claude extensively to figure out the best color palette and design for the website */
   :root{
     /* palette */
     --paper:#EFE7DA;      /* base surface */
@@ -49,7 +51,7 @@
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 
   /* ============================================================
-     SIDEBAR
+     SIDEBAR: worked with claude for the sidebar
      ============================================================ */
   .side{position:fixed;left:0;top:0;width:var(--side);height:100vh;border-right:1px solid var(--line);background:var(--paper-2);display:flex;flex-direction:column;z-index:40;transition:transform .35s cubic-bezier(.22,1,.36,1)}
   .brand{display:flex;align-items:center;gap:11px;padding:18px 18px 14px;border-bottom:1px solid var(--line-soft)}
@@ -84,7 +86,7 @@
   .side .prog i{display:block;height:100%;width:0;background:var(--accent)}
 
   /* ============================================================
-     MAIN + PROGRESS
+     MAIN + PROGRESS: Claude added progress bar 
      ============================================================ */
   .topbar{display:none}
   .main{margin-left:var(--side)}
@@ -99,7 +101,10 @@
 
   /* reveal-on-enter */
   .r{clip-path:inset(0 0 100% 0);transform:translateY(12px);opacity:.001;transition:clip-path .9s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1),opacity .7s}
-  .doc.in .r{clip-path:inset(0 0 -6% 0);transform:none;opacity:1}
+  /* -20% (not -6%): Fraunces' descenders (g/y/j/p/q) paint ~12% of the h2/h1 line-box height
+     below its bottom edge at line-height:.98 — -6% only covered about half of that, clipping
+     the bottom of letters like the "g" in "Agents". -20% clears it with margin to spare. */
+  .doc.in .r{clip-path:inset(0 0 -20% 0);transform:none;opacity:1}
   .doc.in .r:nth-child(2){transition-delay:.06s}
   .doc.in .r:nth-child(3){transition-delay:.12s}
   .doc.in .r:nth-child(4){transition-delay:.18s}
@@ -177,7 +182,7 @@
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
   /* ============================================================
-     RESPONSIVE — mobile drawer
+     RESPONSIVE — mobile drawer - worked with claude to add the mobile drawer, alternative to the sidebar on desktop
      ============================================================ */
   .scrim{display:none}
   @media(max-width:820px){
@@ -202,6 +207,8 @@
     html{scroll-behavior:auto}
     .side{transition:none}
   }
+
+/* HTML section, worked with claude on layout, manually edited the links and the actual content */
 </style>
 </head>
 <body>
@@ -228,10 +235,11 @@
       <details class="folder" open>
         <summary>projects/</summary>
         <a class="file nest" href="#portfolio" data-f="projects/this-portfolio.md" data-name="this-portfolio.md"><span class="dot" aria-hidden="true"></span>this-portfolio.md</a>
+        <a class="file nest" href="#aegentes" data-f="projects/aegentes.md" data-name="aegentes.md" data-keys="company venture"><span class="dot" aria-hidden="true"></span>aegentes.md</a>
         <a class="file nest" href="#predict" data-f="projects/predict.md" data-name="predict.md"><span class="dot" aria-hidden="true"></span>predict.md</a>
-        <a class="file nest" href="#instrument" data-f="projects/instrument.js" data-name="instrument.js"><span class="dot" aria-hidden="true"></span>instrument.js</a>
+        <a class="file nest" href="#callcatcher" data-f="projects/callcatcher.ts" data-name="callcatcher.ts"><span class="dot" aria-hidden="true"></span>callcatcher.ts</a>
+        <a class="file nest" href="#instrument" data-f="projects/hand-music.js" data-name="hand-music.js" data-keys="instrument visual"><span class="dot" aria-hidden="true"></span>hand-music.js</a>
         <a class="file nest" href="#agents" data-f="projects/agents.py" data-name="agents.py" data-keys="hermes ballast"><span class="dot" aria-hidden="true"></span>agents.py</a>
-        <a class="file nest" href="#aegentes" data-f="projects/callcatcher.ts" data-name="callcatcher.ts"><span class="dot" aria-hidden="true"></span>callcatcher.ts</a>
         <details class="folder" open>
           <summary>future/</summary>
           <a class="file nest2 ph" href="#future" data-f="projects/future/project-06.md" data-name="project-06.md"><span class="dot" aria-hidden="true"></span>project-06.md</a>
@@ -263,9 +271,9 @@
         <div>
           <h1 class="r">Elwin</h1>
           <div class="role r">Statistics &amp; Machine Learning + CS · Carnegie Mellon · ’28</div>
-          <p class="bio r">I'm a junior at CMU and a research assistant in the Xu Lab. I like building systems that leave the lab — a research benchmark, AI agents that run my day, and a small AI company. I care about AI for scientific discovery, and I'd rather ship a real thing than write about shipping one.</p>
+          <p class="bio r">I'm a junior at CMU and a research assistant in the Xu Lab. I like building systems that people actually use. AI agents that run my day, automations and websites for small businesses. I care about AI for scientific discovery, .</p>
           <div class="sub r"><h3>Skills</h3><div class="badges"><span>Python</span><span>PyTorch</span><span>Machine Learning</span><span>Computer Vision</span><span>LLMs / RAG</span><span>Statistics</span><span>TypeScript</span><span>React</span><span>Docker</span></div></div>
-          <div class="sub r"><h3>Interests</h3><p class="interests">Brazilian jiu-jitsu · classical &amp; electric guitar · Go · AI × science</p></div>
+          <div class="sub r"><h3>Interests</h3><p class="interests">Brazilian jiu-jitsu · classical &amp; electric guitar · Go · AI</p></div>
         </div>
       </div>
     </section>
@@ -273,68 +281,75 @@
     <section class="doc" id="portfolio">
       <div class="crumb">projects / <b>this-portfolio.md</b></div><div class="no" aria-hidden="true">01</div>
       <div class="kick r">Project · This site</div><h2 class="r">This Portfolio</h2>
-      <p class="lede r">The site you're reading. Built for 15-113, <em>Effective Coding with AI</em> — a portfolio that renders my work as a navigable codebase. Try <b>⌘K</b> to jump between files, or <b>j</b>/<b>k</b> to move.</p>
+      <p class="lede r">The site you're reading right now. Built for 15-113, <em>Effective Coding with AI</em>. A portfolio that renders my work as a navigable codebase. Try <b>⌘K</b> to jump between files, or <b>j</b>/<b>k</b> to move.</p>
       <!-- TODO: replace # with the real source repo URL -->
-      <div class="foot r"><div class="tags"><span>HTML/CSS/JS</span><span>Design</span><span>Motion</span></div><div class="links"><a href="#">source ↗</a></div></div>
+      <div class="foot r"><div class="tags"><span>HTML/CSS/JS</span><span>Design</span><span>Motion</span></div><div class="links"><a href="https://github.com/ebeetles/elwin-webpage">source ↗</a></div></div>
+    </section>
+
+    <section class="doc" id="aegentes">
+      <div class="crumb">projects / <b>aegentes.md</b></div><div class="no" aria-hidden="true">02</div>
+      <div class="kick r">Venture · Company</div><h2 class="r">Aegentes</h2>
+      <p class="lede r">An AI services company I co-founded. We build sharp, narrow AI products for small businesses that would otherwise never get custom software. <a href="#callcatcher">CallCatcher</a> is the flagship: an AI voice receptionist that answers calls, books work, and follows up like a real employee.</p>
+      <!-- TODO: replace # with the real aegentes site URL -->
+      <div class="foot r"><div class="tags"><span>Company</span><span>Founder</span><span>AI Services</span></div><div class="links"><a href="https://www.aegentes.com/">site ↗</a><a href="#callcatcher">callcatcher →</a></div></div>
     </section>
 
     <section class="doc" id="predict">
-      <div class="crumb">projects / <b>predict.md</b></div><div class="no" aria-hidden="true">02</div>
+      <div class="crumb">projects / <b>predict.md</b></div><div class="no" aria-hidden="true">03</div>
       <div class="kick r">Research · Xu Lab</div><h2 class="r">PREDICT</h2>
-      <p class="lede r">A benchmark for LLM-generated Alzheimer's drug-repurposing hypotheses. When an LLM judging novelty got falsified across four experiments, I replaced it with a structural PMI metric on Swanson's ABC model, calibrated per-drug against empirical nulls. Negative controls separated cleanly. Targeting ICLR.</p>
+      <p class="lede r">A benchmark for LLM-generated Alzheimer's drug-repurposing hypotheses. When an LLM judging novelty got falsified across four experiments, I replaced it with a structural PMI metric on Swanson's ABC model, calibrated per-drug against empirical nulls. Paper in progress, targeting ICLR.</p>
       <!-- TODO: replace # with real paper + code URLs -->
-      <div class="foot r"><div class="tags"><span>LLMs</span><span>Evaluation</span><span>Retrieval</span><span>Novelty</span></div><div class="links"><a href="#">paper ↗</a><a href="#">code ↗</a></div></div>
+      <div class="foot r"><div class="tags"><span>LLMs</span><span>Evaluation</span><span>Retrieval</span><span>Novelty</span></div><div class="links"><a href="#">paper ↗</a><a href="https://github.com/ebeetles/Case-studies">code ↗</a></div></div>
+    </section>
+
+    <section class="doc" id="callcatcher">
+      <div class="crumb">projects / <b>callcatcher.ts</b></div><div class="no" aria-hidden="true">04</div>
+      <div class="kick r">Product · Aegentes</div><h2 class="r">CallCatcher</h2>
+      <p class="lede r">An AI voice receptionist for small businesses: Answers calls, books work, never sleeps. Flagship product of <a href="#aegentes">Aegentes</a>, the AI services company I co-founded.</p>
+      <div class="foot r"><div class="tags"><span>Voice AI</span><span>Product</span><span>Founder</span></div><div class="links"><a href="https://callcatcher-snowy.vercel.app/">site ↗</a></div></div>
     </section>
 
     <section class="doc" id="instrument">
-      <div class="crumb">projects / <b>instrument.js</b></div><div class="no" aria-hidden="true">03</div>
-      <div class="kick r">Creative · Computer Vision</div><h2 class="r">Visual Instrument</h2>
-      <p class="lede r">An interactive instrument that turns movement into sound and image in real time, fusing computer vision with live audio. Won CMU's largest hackathon — the clearest proof the research half and the build half are the same person.</p>
-      <div class="foot r"><div class="tags"><span>Computer Vision</span><span>Audio</span><span>Real-time</span></div><div class="st"><b aria-hidden="true">✦</b> 1st place · 2025</div></div>
+      <div class="crumb">projects / <b>hand-music.js</b></div><div class="no" aria-hidden="true">05</div>
+      <div class="kick r">Creative · Computer Vision</div><h2 class="r">Hand Music</h2>
+      <p class="lede r">An interactive instrument that turns hand movement into music in real time, fusing computer vision with live audio. 3rd place at CMU's largest hackathon, TartanHacks.</p>
+      <div class="foot r"><div class="tags"><span>Computer Vision</span><span>Audio</span></div><div class="st"><div class="links"><a href="https://ebeetles.github.io/handmusic/">demo ↗</a><a href="https://github.com/ebeetles/handmusic">code ↗</a></div></div></div>
     </section>
 
     <section class="doc" id="agents">
-      <div class="crumb">projects / <b>agents.py</b></div><div class="no" aria-hidden="true">04</div>
+      <div class="crumb">projects / <b>agents.py</b></div><div class="no" aria-hidden="true">06</div>
       <div class="kick r">Systems · Personal AI</div><h2 class="r">Agents</h2>
-      <p class="lede r">Two agents I built to run my own day. Both live over Telegram and hum on a mini-PC at home — one keeps my life moving, the other keeps me honest about it.</p>
+      <p class="lede r">Two agents that runs my whole workflow. Server for both hosted on a mini-pc in my dorm, live 24/7 through Telegram.</p>
       <div class="agents-grid r">
         <div class="agent">
           <div class="an"><h3>Hermes</h3><span class="fn">hermes.py</span></div>
-          <p class="desc">A personal agent — calendar, cold-email outreach, and a second brain that writes itself into an Obsidian vault.</p>
-          <div class="meta"><div class="tags"><span>Agents</span><span>Automation</span><span>Infra</span></div><div class="st"><b aria-hidden="true">●</b> live · 2025</div></div>
+          <p class="desc">A personal agent for everything. Calendar, cold-email outreach, job scraper, leetcode tracker, and a second brain that writes itself into an Obsidian vault.</p>
+          <div class="meta"><div class="tags"><span>Agents</span><span>Automation</span><span>Infra</span></div><div class="st"></div></div>
         </div>
         <div class="agent">
           <div class="an"><h3>Ballast</h3><span class="fn">ballast.py</span></div>
           <p class="desc">An accountability agent with a Time-Debt ledger and a nightly reflection loop that surfaces the gap between the plan and the day.</p>
-          <div class="meta"><div class="tags"><span>Agents</span><span>Behavioral</span><span>Calendar</span></div><div class="st"><b aria-hidden="true">●</b> live · 2025</div></div>
+          <div class="meta"><div class="tags"><span>Agents</span><span>Behavioral</span><span>Calendar</span></div><div class="st"></div></div>
         </div>
       </div>
     </section>
 
-    <section class="doc" id="aegentes">
-      <div class="crumb">projects / <b>callcatcher.ts</b></div><div class="no" aria-hidden="true">05</div>
-      <div class="kick r">Venture · aegentes</div><h2 class="r">CallCatcher</h2>
-      <p class="lede r">An AI voice receptionist for small businesses — answers calls, books work, never sleeps. First product of a small AI services company I co-founded.</p>
-      <!-- TODO: replace # with the real product/site URL -->
-      <div class="foot r"><div class="tags"><span>Voice AI</span><span>Product</span><span>Founder</span></div><div class="links"><a href="#">site ↗</a></div></div>
-    </section>
-
     <section class="doc placeholder" id="future">
-      <div class="crumb">projects / future / <b>*</b></div><div class="no" aria-hidden="true">06</div>
+      <div class="crumb">projects / future / <b>*</b></div><div class="no" aria-hidden="true">07</div>
       <div class="kick r">Reserved</div><h2 class="r">Future work</h2>
-      <p class="lede r">Slots kept open on purpose. New projects drop in here as files — same treatment as everything above.</p>
+      <p class="lede r">New project drops, check in later!</p>
       <div class="ph-grid r"><div class="ph-card"><b>project-06</b><span>// coming soon</span></div><div class="ph-card"><b>project-07</b><span>// coming soon</span></div><div class="ph-card"><b>+</b><span>// add a file</span></div></div>
     </section>
 
     <section class="doc contact" id="contact">
-      <div class="crumb"><b>contact.json</b></div><div class="no" aria-hidden="true">07</div>
+      <div class="crumb"><b>contact.json</b></div><div class="no" aria-hidden="true">08</div>
       <div class="kick r">Contact</div><h2 class="r">Get in touch</h2>
       <!-- TODO: replace the placeholder addresses/links below with the real ones. -->
       <div class="rows r">
-        <div class="row"><span class="k">email</span><a class="v" href="mailto:you@example.com">you@example.com</a><button class="copy" data-copy="you@example.com" aria-label="Copy email">copy</button></div>
-        <div class="row"><span class="k">github</span><a class="v" href="#">github.com/elwin</a><button class="copy" data-copy="github.com/elwin" aria-label="Copy GitHub">copy</button></div>
-        <div class="row"><span class="k">linkedin</span><a class="v" href="#">in/elwin</a><button class="copy" data-copy="in/elwin" aria-label="Copy LinkedIn">copy</button></div>
-        <div class="row"><span class="k">scholar</span><a class="v" href="#">Google Scholar</a><button class="copy" data-copy="Google Scholar" aria-label="Copy Scholar">copy</button></div>
+        <div class="row"><span class="k">email</span><a class="v" href="elwin.s.li@gmail.com">elwin.s.li@gmail.com</a><button class="copy" data-copy="elwin.s.li@gmail.com" aria-label="Copy email">copy</button></div>
+        <div class="row"><span class="k">github</span><a class="v" href="https://github.com/ebeetles">github/elwin</a><button class="copy" data-copy="https://github.com/ebeetles" aria-label="Copy GitHub">copy</button></div>
+        <div class="row"><span class="k">linkedin</span><a class="v" href="https://www.linkedin.com/in/elwinsli/">in/elwin</a><button class="copy" data-copy="https://www.linkedin.com/in/elwinsli/" aria-label="Copy LinkedIn">copy</button></div>
+        <div class="row"><span class="k">scholar</span><a class="v" href="https://scholar.google.com/citations?user=Mbh8stIAAAAJ&hl=en">Google Scholar</a><button class="copy" data-copy="Google Scholar" aria-label="Copy Scholar">copy</button></div>
       </div>
     </section>
   </main>
@@ -355,6 +370,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+
+  /* Asked claude to generate all the smooth scrolling and command palette stuff, JS section */
 <script>
   const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
   const docs = [...document.querySelectorAll('.doc')], docIds = docs.map(d => d.id);
