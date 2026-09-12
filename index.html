@@ -1,549 +1,69 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="Elwin — Statistics & Machine Learning + CS at Carnegie Mellon. A portfolio that renders my work as a navigable codebase." />
-<title>Elwin — workspace</title>
-
-<!-- Fonts: Fraunces (titles), Bricolage Grotesque (brand/number), IBM Plex Sans (prose), IBM Plex Mono (chrome). Loaded up front — the serif titles are load-bearing for the Press look. -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
-
-<style>
-  /* ============================================================
-     DESIGN TOKENS — "Press" (warm editorial, locked)
-     ============================================================ */
-
-  /* worked with claude extensively to figure out the best color palette and design for the website */
-  :root{
-    /* palette */
-    --paper:#EFE7DA;      /* base surface */
-    --paper-2:#E8DFCF;    /* alt doc bg / panels */
-    --paper-3:#F4EEE3;    /* raised surfaces (photo, badges, palette) */
-    --ink:#2A231C;        /* text */
-    --muted:#8A7E6C;      /* secondary text */
-    --faint:#B3A88F;      /* tertiary / dim rows */
-    --accent:#17635C;     /* deep teal — links, active, status bg */
-    --on-accent:#FFFFFF;  /* text on accent */
-    --line:rgba(42,35,28,.16);
-    --line-soft:rgba(42,35,28,.08);
-
-    /* type */
-    --title:'Fraunces',Georgia,serif;                  /* h1/h2 */
-    --disp:'Bricolage Grotesque',system-ui,sans-serif; /* brand, avatar, big index */
-    --sans:'IBM Plex Sans',system-ui,sans-serif;       /* body prose */
-    --mono:'IBM Plex Mono',ui-monospace,monospace;     /* labels/chrome */
-
-    /* shape */
-    --radius:8px;
-    --doc-shadow:0 -20px 44px rgba(42,35,28,.06);      /* soft seam as sections pin */
-    --side:272px;
-  }
-
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{background:var(--paper-3);color:var(--ink);font-family:var(--mono)}
-  ::selection{background:var(--accent);color:var(--on-accent)}
-  a{color:inherit;text-decoration:none}
-  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
-  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
-
-  /* ============================================================
-     SIDEBAR: worked with claude for the sidebar
-     ============================================================ */
-  .side{position:fixed;left:0;top:0;width:var(--side);height:100vh;border-right:1px solid var(--line);background:var(--paper-2);display:flex;flex-direction:column;z-index:40;transition:transform .35s cubic-bezier(.22,1,.36,1)}
-  .brand{display:flex;align-items:center;gap:11px;padding:18px 18px 14px;border-bottom:1px solid var(--line-soft)}
-  .avatar{width:34px;height:34px;border-radius:var(--radius);background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:700;font-size:17px;flex:none;overflow:hidden}
-  .avatar img{width:100%;height:100%;object-fit:cover}
-  .brand .who b{font-family:var(--disp);font-weight:700;font-size:16px;letter-spacing:-.02em}
-  .brand .who small{display:block;font-size:10px;color:var(--muted)}
-
-  .finder{margin:12px 14px;padding:8px 11px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper-3);font-size:11px;color:var(--faint);display:flex;justify-content:space-between;align-items:center;width:calc(100% - 28px);transition:border-color .16s,color .16s}
-  .finder:hover{color:var(--muted);border-color:var(--muted)}
-  .finder kbd{font-family:var(--mono);border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--muted)}
-
-  .tree{flex:1;overflow:auto;padding:2px 0 14px}
-  .folder>summary{list-style:none;cursor:pointer;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:12px 18px 6px;display:flex;align-items:center;gap:8px;user-select:none}
-  .folder>summary::-webkit-details-marker{display:none}
-  .folder>summary::before{content:"▸";font-size:9px;color:var(--muted);transition:transform .2s}
-  .folder[open]>summary::before{transform:rotate(90deg)}
-  .folder .folder>summary{padding-left:30px}
-  a.file{display:flex;align-items:center;gap:9px;padding:7px 18px 7px 30px;font-size:13px;color:var(--muted);transition:color .16s,background .16s,border-color .16s;border-left:2px solid transparent}
-  a.file.nest{padding-left:42px} a.file.nest2{padding-left:54px}
-  a.file:hover{color:var(--ink);background:var(--paper-3)}
-  a.file.on{color:var(--ink);background:var(--paper-3);border-left-color:var(--accent)}
-  a.file .dot{width:6px;height:6px;border-radius:50%;background:var(--faint);flex:none}
-  a.file.on .dot{background:var(--accent)}
-  a.file.ph{color:var(--faint)} a.file.ph .dot{background:transparent;border:1px dashed var(--faint)}
-
-  .side .foot{padding:12px 16px;border-top:1px solid var(--line-soft)}
-  .side .foot .lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
-  .side .foot .keys{display:flex;flex-wrap:wrap;gap:6px}
-  .side .foot .keys kbd{font-family:var(--mono);font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:2px 7px}
-  .side .prog{height:2px;background:var(--line-soft)}
-  .side .prog i{display:block;height:100%;width:0;background:var(--accent)}
-
-  /* ============================================================
-     MAIN + PROGRESS: Claude added progress bar 
-     ============================================================ */
-  .topbar{display:none}
-  .main{margin-left:var(--side)}
-  .progtop{position:fixed;top:0;left:var(--side);right:0;height:2px;z-index:45}
-  .progtop i{display:block;height:100%;width:0;background:var(--accent)}
-
-  .doc{position:sticky;top:0;min-height:100vh;padding:clamp(58px,9vh,112px) clamp(30px,5vw,96px) 96px;display:flex;flex-direction:column;justify-content:center;background:var(--paper-3);box-shadow:var(--doc-shadow)}
-  .doc:nth-child(even){background:var(--paper-2)}
-  .doc .crumb{position:absolute;top:26px;left:clamp(30px,5vw,96px);font-size:11px;color:var(--muted)}
-  .doc .crumb b{color:var(--accent)}
-  .doc .no{position:absolute;top:20px;right:clamp(30px,5vw,96px);font-family:var(--disp);font-weight:700;font-size:clamp(40px,6vw,92px);line-height:.8;color:transparent;-webkit-text-stroke:1px var(--line);will-change:transform}
-
-  /* reveal-on-enter */
-  .r{clip-path:inset(0 0 100% 0);transform:translateY(12px);opacity:.001;transition:clip-path .9s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1),opacity .7s}
-  /* -20% (not -6%): Fraunces' descenders (g/y/j/p/q) paint ~12% of the h2/h1 line-box height
-     below its bottom edge at line-height:.98 — -6% only covered about half of that, clipping
-     the bottom of letters like the "g" in "Agents". -20% clears it with margin to spare. */
-  .doc.in .r{clip-path:inset(0 0 -20% 0);transform:none;opacity:1}
-  .doc.in .r:nth-child(2){transition-delay:.06s}
-  .doc.in .r:nth-child(3){transition-delay:.12s}
-  .doc.in .r:nth-child(4){transition-delay:.18s}
-  .doc.in .r:nth-child(5){transition-delay:.24s}
-  .doc.in .r:nth-child(6){transition-delay:.30s}
-  .doc.in .r:nth-child(7){transition-delay:.36s}
-
-  .kick{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
-  .doc h2{font-family:var(--title);font-weight:600;font-size:clamp(40px,7vw,100px);letter-spacing:-.01em;line-height:.98}
-  .doc .lede{margin-top:24px;font-family:var(--sans);font-size:clamp(15px,1.5vw,20px);line-height:1.62;color:var(--ink);max-width:58ch}
-  .foot{margin-top:34px;display:flex;flex-wrap:wrap;gap:22px;align-items:center}
-  .tags{display:flex;flex-wrap:wrap;gap:8px}
-  .tags span{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:var(--radius);padding:6px 13px}
-  .links{display:flex;flex-wrap:wrap;gap:18px;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
-  .links a{color:var(--accent);border-bottom:1px solid transparent;transition:border-color .3s}
-  .links a:hover{border-color:var(--accent)}
-  .st{font-size:12px;color:var(--muted)} .st b{color:var(--accent)}
-
-  /* README (profile) */
-  .readme{display:grid;grid-template-columns:auto 1fr;gap:clamp(28px,4vw,60px);align-items:start;max-width:960px}
-  .readme .photo{width:clamp(120px,15vw,168px);height:clamp(120px,15vw,168px);border-radius:var(--radius);border:1px solid var(--line);background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;flex:none;overflow:hidden}
-  .readme .photo img{width:100%;height:100%;object-fit:cover}
-  .readme .photo .ph-i{font-family:var(--disp);font-weight:700;font-size:56px;color:var(--accent)}
-  .readme .photo .ph-c{font-size:10px;color:var(--faint)}
-  .readme h1{font-family:var(--title);font-weight:600;letter-spacing:-.02em;font-size:clamp(38px,5.5vw,72px);line-height:.98}
-  .readme .role{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);margin-top:12px}
-  .readme .bio{font-family:var(--sans);font-size:clamp(15px,1.5vw,18px);line-height:1.62;color:var(--ink);max-width:56ch;margin-top:18px}
-  .readme .sub{margin-top:24px}
-  .readme .sub h3{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:12px}
-  .readme .badges{display:flex;flex-wrap:wrap;gap:8px}
-  .readme .badges span{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:var(--radius);padding:5px 11px;background:var(--paper-3)}
-  .readme .interests{font-family:var(--sans);font-size:15px;color:var(--muted)}
-
-  /* Agents (merged Hermes + Ballast) */
-  .agents-grid{margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:820px}
-  .agent{border:1px solid var(--line);border-radius:var(--radius);padding:20px 20px 18px;background:var(--paper);display:flex;flex-direction:column}
-  .agent .an{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-  .agent h3{font-family:var(--title);font-weight:600;font-size:24px;letter-spacing:-.01em}
-  .agent .fn{font-family:var(--mono);font-size:11px;color:var(--faint)}
-  .agent .desc{font-family:var(--sans);font-size:14px;line-height:1.55;color:var(--ink);margin-top:10px;flex:1}
-  .agent .meta{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-
-  /* Future (placeholder) */
-  .placeholder h2{color:var(--faint);-webkit-text-stroke:0}
-  .ph-grid{margin-top:30px;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;max-width:720px}
-  .ph-card{border:1px dashed var(--line);border-radius:var(--radius);padding:22px 18px;color:var(--faint);font-size:12px;min-height:118px;display:flex;flex-direction:column;justify-content:space-between}
-  .ph-card b{font-family:var(--title);font-weight:500;font-size:20px;letter-spacing:-.02em;color:var(--muted)}
-
-  /* Contact */
-  .contact .rows{margin-top:26px;max-width:620px}
-  .contact .row{display:grid;grid-template-columns:120px 1fr auto;gap:16px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--line-soft)}
-  .contact .k{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-  .contact .v{font-size:14px} .contact a.v:hover{color:var(--accent)}
-  .contact .copy{font-size:11px;color:var(--faint);border:1px solid var(--line);border-radius:var(--radius);padding:3px 9px;transition:color .2s,border-color .2s}
-  .contact .copy:hover{color:var(--accent);border-color:var(--accent)}
-
-  /* Status bar */
-  .status{position:fixed;bottom:0;left:var(--side);right:0;height:30px;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;gap:20px;padding:0 18px;font-size:11px;letter-spacing:.04em;z-index:40}
-  .status .sp{margin-left:auto}
-
-  /* Command palette */
-  .palette{position:fixed;inset:0;z-index:100;display:none;align-items:flex-start;justify-content:center;padding-top:14vh;background:rgba(42,35,28,.34);backdrop-filter:blur(3px)}
-  body.pal-open .palette{display:flex}
-  .palette .box{width:min(560px,92vw);background:var(--paper-3);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 30px 90px rgba(42,35,28,.35)}
-  .palette input{width:100%;border:0;background:transparent;padding:18px 20px;font-family:var(--mono);font-size:15px;color:var(--ink);border-bottom:1px solid var(--line-soft);outline:none}
-  .palette input::placeholder{color:var(--faint)}
-  .palette .res{max-height:46vh;overflow:auto;padding:8px}
-  .palette .opt{display:flex;justify-content:space-between;gap:12px;padding:11px 14px;border-radius:var(--radius);cursor:pointer;font-size:13px}
-  .palette .opt .nm{color:var(--ink)} .palette .opt .pth{color:var(--faint);font-size:11px}
-  .palette .opt.active{background:var(--accent)}
-  .palette .opt.active .nm,.palette .opt.active .pth{color:var(--on-accent)}
-  .palette .pfoot{display:flex;gap:16px;padding:10px 16px;border-top:1px solid var(--line-soft);font-size:11px;color:var(--faint)}
-
-  .toast{position:fixed;bottom:46px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:var(--radius);font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:120}
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-  /* ============================================================
-     RESPONSIVE — mobile drawer - worked with claude to add the mobile drawer, alternative to the sidebar on desktop
-     ============================================================ */
-  .scrim{display:none}
-  @media(max-width:820px){
-    :root{--side:264px}
-    .side{transform:translateX(-100%)}
-    body.nav-open .side{transform:none}
-    body.nav-open .scrim{display:block;position:fixed;inset:0;background:rgba(42,35,28,.4);z-index:35}
-    .main{margin-left:0} .status{left:0} .progtop{left:0}
-    .topbar{display:flex;position:fixed;top:0;left:0;width:100%;z-index:38;justify-content:space-between;align-items:center;padding:14px 20px;background:var(--paper-2);border-bottom:1px solid var(--line)}
-    .topbar .b{font-family:var(--disp);font-weight:700;font-size:16px}
-    .topbar .menu{font-size:12px;color:var(--accent);border:1px solid var(--line);border-radius:var(--radius);padding:6px 12px}
-    .doc{padding-top:96px}
-    .readme{grid-template-columns:1fr}
-    .agents-grid{grid-template-columns:1fr}
-    .contact .row{grid-template-columns:96px 1fr auto;gap:12px}
-  }
-  @media(max-width:720px){.readme{grid-template-columns:1fr}}
-
-  @media(prefers-reduced-motion:reduce){
-    .doc{position:relative}
-    .r{clip-path:none;transform:none;opacity:1;transition:none}
-    html{scroll-behavior:auto}
-    .side{transition:none}
-  }
-
-/* HTML section, worked with claude on layout, manually edited the links and the actual content */
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CROSSBEAT</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Tone.js (UMD, exposes window.Tone) from an allowlisted CDN. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+  }}
+  </script>
 </head>
 <body>
-  <!-- mobile top bar -->
-  <div class="topbar"><span class="b">elwin/</span><button class="menu" id="menu" aria-label="Toggle file drawer">☰ files</button></div>
-  <div class="scrim" id="scrim" aria-hidden="true"></div>
+  <canvas id="c"></canvas>
 
-  <!-- ============================================================
-       SIDEBAR
-       ============================================================ -->
-  <aside class="side">
-    <div class="brand">
-      <!-- TODO: drop a square headshot in here, e.g. <img src="assets/elwin.jpg" alt="Elwin"> — placeholder is the initial. -->
-      <div class="avatar" aria-hidden="true">E</div>
-      <div class="who"><b>elwin/</b><small>Stats/ML · Carnegie Mellon</small></div>
+  <!-- HUD -->
+  <div id="hud">
+    <div id="topbar">
+      <div class="stat"><span id="score">0</span></div>
+      <div class="mid">
+        <div id="beatPip"></div>
+        <div id="biome">Meadow</div>
+        <div id="bpm">110 BPM</div>
+      </div>
+      <div class="stat right"><span id="best">BEST 0</span></div>
     </div>
+    <div id="comboWrap"><span id="combo"></span></div>
+    <div id="feedback"></div>
+    <div id="toast"></div>
+    <div id="edgeGlow"></div>
+  </div>
 
-    <button class="finder" id="finder" aria-haspopup="dialog" aria-label="Find a file (Command K)">
-      <span>Find a file…</span><kbd aria-hidden="true">⌘K</kbd>
-    </button>
+  <!-- Title -->
+  <div id="title" class="screen show">
+    <h1>CROSS<span>BEAT</span></h1>
+    <p class="tag">Every beat is one move. Cross to the rhythm.</p>
+    <div class="keys"><b>WASD</b> / <b>Arrows</b> to hop &nbsp;•&nbsp; move only <em>on the beat</em></div>
+    <button id="startBtn" class="btn">▶ PRESS TO START</button>
+    <button id="recalBtn" class="btn ghost">Re-run calibration</button>
+    <p class="hint">Headphones recommended. Audio unlocks on click.</p>
+  </div>
 
-    <nav class="tree" aria-label="Files">
-      <a class="file" href="#readme" data-f="README.md" data-name="README.md"><span class="dot" aria-hidden="true"></span>README.md</a>
-      <details class="folder" open>
-        <summary>projects/</summary>
-        <a class="file nest" href="#portfolio" data-f="projects/this-portfolio.md" data-name="this-portfolio.md"><span class="dot" aria-hidden="true"></span>this-portfolio.md</a>
-        <a class="file nest" href="#aegentes" data-f="projects/aegentes.md" data-name="aegentes.md" data-keys="company venture"><span class="dot" aria-hidden="true"></span>aegentes.md</a>
-        <a class="file nest" href="#predict" data-f="projects/predict.md" data-name="predict.md"><span class="dot" aria-hidden="true"></span>predict.md</a>
-        <a class="file nest" href="#callcatcher" data-f="projects/callcatcher.ts" data-name="callcatcher.ts"><span class="dot" aria-hidden="true"></span>callcatcher.ts</a>
-        <a class="file nest" href="#instrument" data-f="projects/hand-music.js" data-name="hand-music.js" data-keys="instrument visual"><span class="dot" aria-hidden="true"></span>hand-music.js</a>
-        <a class="file nest" href="#agents" data-f="projects/agents.py" data-name="agents.py" data-keys="hermes ballast"><span class="dot" aria-hidden="true"></span>agents.py</a>
-        <a class="file nest" href="#crossybeat" data-f="projects/crossy-beat.js" data-name="crossy-beat.js" data-keys="crossy road rhythm game"><span class="dot" aria-hidden="true"></span>crossy-beat.js</a>
-        <details class="folder" open>
-          <summary>future/</summary>
-          <a class="file nest2 ph" href="#future" data-f="projects/future/project-06.md" data-name="project-06.md"><span class="dot" aria-hidden="true"></span>project-06.md</a>
-          <a class="file nest2 ph" href="#future" data-f="projects/future/project-07.md" data-name="project-07.md"><span class="dot" aria-hidden="true"></span>project-07.md</a>
-        </details>
-      </details>
-      <a class="file" href="#contact" data-f="contact.json" data-name="contact.json"><span class="dot" aria-hidden="true"></span>contact.json</a>
-    </nav>
+  <!-- Calibration -->
+  <div id="calib" class="screen">
+    <h2>Calibration</h2>
+    <p class="tag">Tap <b>SPACE</b> on each beat. We'll measure your latency.</p>
+    <div id="calibPip"></div>
+    <div id="calibCount">0 / 8</div>
+    <button id="calibSkip" class="btn ghost">Skip (use 0ms)</button>
+  </div>
 
-    <div class="foot">
-      <div class="lbl">Keys</div>
-      <div class="keys" aria-hidden="true">
-        <kbd>⌘K jump</kbd><kbd>j / k move</kbd>
-      </div>
+  <!-- Game over -->
+  <div id="gameOver" class="card">
+    <h2>WIPEOUT</h2>
+    <div id="goNew" class="newbest">NEW BEST!</div>
+    <div class="rows">
+      <div><span class="lbl">Score</span><span id="goScore">0</span></div>
+      <div><span class="lbl">Best</span><span id="goBest">0</span></div>
     </div>
-    <div class="prog" aria-hidden="true"><i id="sideprog"></i></div>
-  </aside>
+    <button id="restartBtn" class="btn">↺ RESTART <span class="sub">(R / Space)</span></button>
+  </div>
 
-  <div class="progtop" aria-hidden="true"><i id="progtop"></i></div>
-
-  <!-- ============================================================
-       MAIN
-       ============================================================ -->
-  <main class="main">
-    <section class="doc" id="readme">
-      <div class="crumb"><b>README.md</b></div><div class="no" aria-hidden="true">00</div>
-      <div class="readme">
-        <div class="photo r"><img src="assets/elwin.jpg" alt="Elwin"></div>
-        <div>
-          <h1 class="r">Elwin</h1>
-          <div class="role r">Statistics &amp; Machine Learning + CS · Carnegie Mellon · ’28</div>
-          <p class="bio r">I'm a junior at CMU and a research assistant in the Xu Lab. I like building systems that people actually use. AI agents that run my day, automations and websites for small businesses. I care about AI for scientific discovery, .</p>
-          <div class="sub r"><h3>Skills</h3><div class="badges"><span>Python</span><span>PyTorch</span><span>Machine Learning</span><span>Computer Vision</span><span>LLMs / RAG</span><span>Statistics</span><span>TypeScript</span><span>React</span><span>Docker</span></div></div>
-          <div class="sub r"><h3>Interests</h3><p class="interests">Brazilian jiu-jitsu · classical &amp; electric guitar · Go · AI</p></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="doc" id="portfolio">
-      <div class="crumb">projects / <b>this-portfolio.md</b></div><div class="no" aria-hidden="true">01</div>
-      <div class="kick r">Project · This site</div><h2 class="r">This Portfolio</h2>
-      <p class="lede r">The site you're reading right now. Built for 15-113, <em>Effective Coding with AI</em>. A portfolio that renders my work as a navigable codebase. Try <b>⌘K</b> to jump between files, or <b>j</b>/<b>k</b> to move.</p>
-      <!-- TODO: replace # with the real source repo URL -->
-      <div class="foot r"><div class="tags"><span>HTML/CSS/JS</span><span>Design</span><span>Motion</span></div><div class="links"><a href="https://github.com/ebeetles/elwin-webpage">source ↗</a></div></div>
-    </section>
-
-    <section class="doc" id="aegentes">
-      <div class="crumb">projects / <b>aegentes.md</b></div><div class="no" aria-hidden="true">02</div>
-      <div class="kick r">Venture · Company</div><h2 class="r">Aegentes</h2>
-      <p class="lede r">An AI services company I co-founded. We build sharp, narrow AI products for small businesses that would otherwise never get custom software. <a href="#callcatcher">CallCatcher</a> is the flagship: an AI voice receptionist that answers calls, books work, and follows up like a real employee.</p>
-      <!-- TODO: replace # with the real aegentes site URL -->
-      <div class="foot r"><div class="tags"><span>Company</span><span>Founder</span><span>AI Services</span></div><div class="links"><a href="https://www.aegentes.com/">site ↗</a><a href="#callcatcher">callcatcher →</a></div></div>
-    </section>
-
-    <section class="doc" id="predict">
-      <div class="crumb">projects / <b>predict.md</b></div><div class="no" aria-hidden="true">03</div>
-      <div class="kick r">Research · Xu Lab</div><h2 class="r">PREDICT</h2>
-      <p class="lede r">A benchmark for LLM-generated Alzheimer's drug-repurposing hypotheses. When an LLM judging novelty got falsified across four experiments, I replaced it with a structural PMI metric on Swanson's ABC model, calibrated per-drug against empirical nulls. Paper in progress, targeting ICLR.</p>
-      <!-- TODO: replace # with real paper + code URLs -->
-      <div class="foot r"><div class="tags"><span>LLMs</span><span>Evaluation</span><span>Retrieval</span><span>Novelty</span></div><div class="links"><a href="#">paper ↗</a><a href="https://github.com/ebeetles/Case-studies">code ↗</a></div></div>
-    </section>
-
-    <section class="doc" id="callcatcher">
-      <div class="crumb">projects / <b>callcatcher.ts</b></div><div class="no" aria-hidden="true">04</div>
-      <div class="kick r">Product · Aegentes</div><h2 class="r">CallCatcher</h2>
-      <p class="lede r">An AI voice receptionist for small businesses: Answers calls, books work, never sleeps. Flagship product of <a href="#aegentes">Aegentes</a>, the AI services company I co-founded.</p>
-      <div class="foot r"><div class="tags"><span>Voice AI</span><span>Product</span><span>Founder</span></div><div class="links"><a href="https://callcatcher-snowy.vercel.app/">site ↗</a></div></div>
-    </section>
-
-    <section class="doc" id="instrument">
-      <div class="crumb">projects / <b>hand-music.js</b></div><div class="no" aria-hidden="true">05</div>
-      <div class="kick r">Creative · Computer Vision</div><h2 class="r">Hand Music</h2>
-      <p class="lede r">An interactive instrument that turns hand movement into music in real time, fusing computer vision with live audio. 3rd place at CMU's largest hackathon, TartanHacks.</p>
-      <div class="foot r"><div class="tags"><span>Computer Vision</span><span>Audio</span></div><div class="st"><div class="links"><a href="https://ebeetles.github.io/handmusic/">demo ↗</a><a href="https://github.com/ebeetles/handmusic">code ↗</a></div></div></div>
-    </section>
-
-    <section class="doc" id="agents">
-      <div class="crumb">projects / <b>agents.py</b></div><div class="no" aria-hidden="true">06</div>
-      <div class="kick r">Systems · Personal AI</div><h2 class="r">Agents</h2>
-      <p class="lede r">Two agents that runs my whole workflow. Server for both hosted on a mini-pc in my dorm, live 24/7 through Telegram.</p>
-      <div class="agents-grid r">
-        <div class="agent">
-          <div class="an"><h3>Hermes</h3><span class="fn">hermes.py</span></div>
-          <p class="desc">A personal agent for everything. Calendar, cold-email outreach, job scraper, leetcode tracker, and a second brain that writes itself into an Obsidian vault.</p>
-          <div class="meta"><div class="tags"><span>Agents</span><span>Automation</span><span>Infra</span></div><div class="st"></div></div>
-        </div>
-        <div class="agent">
-          <div class="an"><h3>Ballast</h3><span class="fn">ballast.py</span></div>
-          <p class="desc">An accountability agent with a Time-Debt ledger and a nightly reflection loop that surfaces the gap between the plan and the day.</p>
-          <div class="meta"><div class="tags"><span>Agents</span><span>Behavioral</span><span>Calendar</span></div><div class="st"></div></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="doc" id="crossybeat">
-      <div class="crumb">projects / <b>crossy-beat.js</b></div><div class="no" aria-hidden="true">07</div>
-      <div class="kick r">Creative · Rhythm Game</div><h2 class="r">Crossy Beat</h2>
-      <p class="lede r">A rhythm-game remix of Crossy Road: hop across traffic, water, and trains on the beat, or lose your run. Levels are procedurally generated and solvability-checked with a BFS so every batch is beatable, and a Tone.js clock stays the single source of truth for timing — kept strictly separate from the Three.js renderer, which only interpolates between beats.</p>
-      <div class="foot r"><div class="tags"><span>Three.js</span><span>Tone.js</span><span>Procedural Gen</span></div><div class="links"><a href="https://ebeetles.github.io/Crossy-Beat/">demo ↗</a><a href="https://github.com/ebeetles/Crossy-Beat">code ↗</a></div></div>
-    </section>
-
-    <section class="doc placeholder" id="future">
-      <div class="crumb">projects / future / <b>*</b></div><div class="no" aria-hidden="true">08</div>
-      <div class="kick r">Reserved</div><h2 class="r">Future work</h2>
-      <p class="lede r">New project drops, check in later!</p>
-      <div class="ph-grid r"><div class="ph-card"><b>project-06</b><span>// coming soon</span></div><div class="ph-card"><b>project-07</b><span>// coming soon</span></div><div class="ph-card"><b>+</b><span>// add a file</span></div></div>
-    </section>
-
-    <section class="doc contact" id="contact">
-      <div class="crumb"><b>contact.json</b></div><div class="no" aria-hidden="true">09</div>
-      <div class="kick r">Contact</div><h2 class="r">Get in touch</h2>
-      <!-- TODO: replace the placeholder addresses/links below with the real ones. -->
-      <div class="rows r">
-        <div class="row"><span class="k">email</span><a class="v" href="elwin.s.li@gmail.com">elwin.s.li@gmail.com</a><button class="copy" data-copy="elwin.s.li@gmail.com" aria-label="Copy email">copy</button></div>
-        <div class="row"><span class="k">github</span><a class="v" href="https://github.com/ebeetles">github/elwin</a><button class="copy" data-copy="https://github.com/ebeetles" aria-label="Copy GitHub">copy</button></div>
-        <div class="row"><span class="k">linkedin</span><a class="v" href="https://www.linkedin.com/in/elwinsli/">in/elwin</a><button class="copy" data-copy="https://www.linkedin.com/in/elwinsli/" aria-label="Copy LinkedIn">copy</button></div>
-        <div class="row"><span class="k">scholar</span><a class="v" href="https://scholar.google.com/citations?user=Mbh8stIAAAAJ&hl=en">Google Scholar</a><button class="copy" data-copy="Google Scholar" aria-label="Copy Scholar">copy</button></div>
-      </div>
-    </section>
-  </main>
-
-  <!-- ============================================================
-       STATUS BAR
-       ============================================================ -->
-  <div class="status"><span><span aria-hidden="true">⎇</span> main</span><span id="stbar">README.md</span><span class="sp" id="stpct">0%</span></div>
-
-  <!-- ============================================================
-       COMMAND PALETTE
-       ============================================================ -->
-  <div class="palette" id="palette" role="dialog" aria-modal="true" aria-label="Jump to a file" aria-hidden="true"><div class="box">
-    <input id="palinput" type="text" placeholder="Jump to a file…" autocomplete="off" spellcheck="false" aria-label="Filter files">
-    <div class="res" id="palres" role="listbox" aria-label="Files"></div>
-    <div class="pfoot"><span>↑↓ navigate</span><span>↵ open</span><span>esc close</span></div>
-  </div></div>
-
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-
-  /* Asked claude to generate all the smooth scrolling and command palette stuff, JS section */
-<script>
-  const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
-  const docs = [...document.querySelectorAll('.doc')], docIds = docs.map(d => d.id);
-  const files = [...document.querySelectorAll('.tree a.file')], byId = {};
-  files.forEach(a => { const id = a.getAttribute('href').slice(1); (byId[id] = byId[id] || []).push(a); });
-  const stbar = document.getElementById('stbar'), stpct = document.getElementById('stpct');
-  let curIdx = -1, tops = [];
-
-  // Cumulative flow-top of each doc (sum of preceding heights). This is the ONLY reliable
-  // measure in a position:sticky pinned layout: rect.top reads 0 once a section pins, and
-  // offsetTop is unreliable for stuck elements. Recomputed on resize and after fonts load.
-  function measure(){ let t = 0; tops = docs.map(d => { const y = t; t += d.offsetHeight; return y; }); }
-  measure();
-  addEventListener('resize', measure);
-  if(document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
-
-  // Which section is pinned at the top right now — derived deterministically from scrollY,
-  // never from an IntersectionObserver. Stacked pinned sections overlap the viewport, so a
-  // center-band observer fires for several at once and whichever callback runs last wins,
-  // which is exactly what made the sidebar highlight and j/k feel random.
-  function activeIndex(){
-    const y = window.scrollY + 2;
-    let i = 0;
-    for(let k = 0; k < tops.length; k++){ if(tops[k] <= y) i = k; else break; }
-    return i;
-  }
-
-  function goTo(id){
-    const i = docIds.indexOf(id);
-    if(i < 0) return;
-    if(!tops.length) measure();
-    window.scrollTo({ top: tops[i], behavior: reduce ? 'auto' : 'smooth' });
-    document.body.classList.remove('nav-open');
-  }
-
-  // j/k stepping. Rapid presses must accumulate: basing each press on the live (mid-animation)
-  // scroll would make several fast presses all target the same next file. navIdx carries the
-  // intended index across presses; any manual scroll/tap or a short idle re-bases it to the
-  // section actually pinned, so keyboard nav and the wheel never fight.
-  let navIdx = null, navTimer;
-  function step(dir){
-    const base = (navIdx === null) ? activeIndex() : navIdx;
-    navIdx = Math.max(0, Math.min(docIds.length - 1, base + dir));
-    goTo(docIds[navIdx]);
-    clearTimeout(navTimer);
-    navTimer = setTimeout(() => { navIdx = null; }, 700);
-  }
-  ['wheel', 'touchstart', 'pointerdown'].forEach(ev => addEventListener(ev, () => { navIdx = null; }, { passive: true }));
-
-  /* Route every in-page anchor (tree files) through goTo so the offsetTop-based jump is used —
-     placeholder "#" links (length 1) fall through to default behaviour. */
-  document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', ev => {
-    const href = a.getAttribute('href');
-    if(href.length > 1){ ev.preventDefault(); goTo(href.slice(1)); }
-  }));
-
-  /* scroll-spy: highlight the active tree file + status filename. Driven by activeIndex()
-     from the rAF loop below (deterministic), updating the DOM only when the index changes. */
-  function setActive(i){
-    if(i === curIdx) return;
-    curIdx = i;
-    const id = docIds[i];
-    files.forEach(f => f.classList.remove('on'));
-    (byId[id] || []).forEach(a => a.classList.add('on'));
-    const f = (byId[id] || [])[0];
-    if(f) stbar.textContent = f.dataset.f;
-  }
-
-  /* reveal-on-enter (once) */
-  const rev = new IntersectionObserver(es => {
-    es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); rev.unobserve(e.target); } });
-  }, { threshold: .18 });
-  docs.forEach(s => rev.observe(s));
-
-  /* progress bars + number parallax + status percentage */
-  const pt = document.getElementById('progtop'), sp = document.getElementById('sideprog');
-  function frame(){
-    const vh = innerHeight, max = document.documentElement.scrollHeight - vh, y = window.scrollY;
-    const p = max > 0 ? y / max : 0;
-    pt.style.width = sp.style.width = (p * 100) + '%';
-    stpct.textContent = Math.round(p * 100) + '%';
-    setActive(activeIndex());
-    if(!reduce) docs.forEach(d => {
-      const no = d.querySelector('.no');
-      if(no){ const t = d.getBoundingClientRect().top - vh / 2; no.style.transform = `translateY(${t * -0.045}px)`; }
-    });
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-
-  /* command palette */
-  const palette = document.getElementById('palette'), palinput = document.getElementById('palinput'), palres = document.getElementById('palres');
-  const data = [...new Map(files.map(a => [a.getAttribute('href').slice(1), { id: a.getAttribute('href').slice(1), name: a.dataset.name, path: a.dataset.f, keys: a.dataset.keys || '' }])).values()];
-  let palActive = 0, palList = data, lastFocused = null;
-
-  function renderPal(q = ''){
-    palList = data.filter(f => (f.name + ' ' + f.path + ' ' + f.keys).toLowerCase().includes(q.toLowerCase()));
-    if(palActive >= palList.length) palActive = 0;
-    palres.innerHTML = palList.map((f, i) =>
-      `<div class="opt${i === palActive ? ' active' : ''}" role="option" aria-selected="${i === palActive}" data-id="${f.id}"><span class="nm">${f.name}</span><span class="pth">${f.path}</span></div>`
-    ).join('') || '<div class="opt"><span class="pth">no matches</span></div>';
-    [...palres.querySelectorAll('.opt[data-id]')].forEach(o => o.addEventListener('click', () => { goTo(o.dataset.id); closePal(); }));
-  }
-  function openPal(){
-    lastFocused = document.activeElement;
-    document.body.classList.add('pal-open');
-    palette.setAttribute('aria-hidden', 'false');
-    palinput.value = ''; palActive = 0; renderPal();
-    setTimeout(() => palinput.focus(), 30);
-  }
-  function closePal(){
-    if(!document.body.classList.contains('pal-open')) return;
-    document.body.classList.remove('pal-open');
-    palette.setAttribute('aria-hidden', 'true');
-    if(lastFocused && lastFocused.focus) lastFocused.focus();
-  }
-  palinput.addEventListener('input', () => { palActive = 0; renderPal(palinput.value); });
-  palinput.addEventListener('keydown', e => {
-    if(e.key === 'ArrowDown'){ e.preventDefault(); palActive = Math.min(palActive + 1, palList.length - 1); renderPal(palinput.value); }
-    else if(e.key === 'ArrowUp'){ e.preventDefault(); palActive = Math.max(palActive - 1, 0); renderPal(palinput.value); }
-    else if(e.key === 'Enter'){ e.preventDefault(); if(palList[palActive]){ goTo(palList[palActive].id); closePal(); } }
-    else if(e.key === 'Escape'){ closePal(); }
-    else if(e.key === 'Tab'){ e.preventDefault(); } /* focus trap: only the input is focusable while open */
-  });
-  document.getElementById('finder').addEventListener('click', openPal);
-  palette.addEventListener('click', e => { if(e.target === palette) closePal(); });
-
-  /* global keys: ⌘K / ⌘P toggle palette; j / k move when not typing */
-  addEventListener('keydown', e => {
-    const inField = /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName);
-    if((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'p')){
-      e.preventDefault();
-      document.body.classList.contains('pal-open') ? closePal() : openPal();
-      return;
-    }
-    if(inField) return;
-    // Deterministic stepping that also chains across rapid presses (see step()).
-    if(e.key === 'j'){ e.preventDefault(); step(1); }
-    else if(e.key === 'k'){ e.preventDefault(); step(-1); }
-    else if(e.key === 'Escape'){ closePal(); }
-  });
-
-  /* mobile drawer */
-  const menu = document.getElementById('menu'), scrim = document.getElementById('scrim');
-  const toggleNav = () => document.body.classList.toggle('nav-open');
-  menu && menu.addEventListener('click', toggleNav);
-  scrim && scrim.addEventListener('click', toggleNav);
-  files.forEach(a => a.addEventListener('click', () => document.body.classList.remove('nav-open')));
-
-  /* copy-to-clipboard + toast */
-  const toast = document.getElementById('toast'); let tt;
-  document.querySelectorAll('.copy').forEach(b => b.addEventListener('click', () => {
-    const v = b.dataset.copy;
-    (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.resolve()).finally(() => {
-      toast.textContent = 'copied ' + v;
-      toast.classList.add('show');
-      clearTimeout(tt); tt = setTimeout(() => toast.classList.remove('show'), 1400);
-    });
-  }));
-
-  /* Scrolling is native: fully responsive on the wheel/trackpad, and CSS scroll-behavior
-     (plus window.scrollTo above) gives smooth, exact anchor jumps. Lenis was removed — its
-     virtual scroll desynced against the position:sticky pinning, which both made the wheel
-     feel laggy and broke upward jumps by computing the wrong scroll target. */
-</script>
+  <script type="module" src="src/main.js"></script>
 </body>
 </html>
