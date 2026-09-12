@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CROSSBEAT</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Tone.js (UMD, exposes window.Tone) from an allowlisted CDN. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+  }}
+  </script>
+</head>
+<body>
+  <canvas id="c"></canvas>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div id="topbar">
+      <div class="stat"><span id="score">0</span></div>
+      <div class="mid">
+        <div id="beatPip"></div>
+        <div id="biome">Meadow</div>
+        <div id="bpm">110 BPM</div>
+      </div>
+      <div class="stat right"><span id="best">BEST 0</span></div>
+    </div>
+    <div id="comboWrap"><span id="combo"></span></div>
+    <div id="feedback"></div>
+    <div id="toast"></div>
+    <div id="edgeGlow"></div>
+  </div>
+
+  <!-- Title -->
+  <div id="title" class="screen show">
+    <h1>CROSS<span>BEAT</span></h1>
+    <p class="tag">Every beat is one move. Cross to the rhythm.</p>
+    <div class="keys"><b>WASD</b> / <b>Arrows</b> to hop &nbsp;•&nbsp; move only <em>on the beat</em></div>
+    <button id="startBtn" class="btn">▶ PRESS TO START</button>
+    <button id="recalBtn" class="btn ghost">Re-run calibration</button>
+    <p class="hint">Headphones recommended. Audio unlocks on click.</p>
+  </div>
+
+  <!-- Calibration -->
+  <div id="calib" class="screen">
+    <h2>Calibration</h2>
+    <p class="tag">Tap <b>SPACE</b> on each beat. We'll measure your latency.</p>
+    <div id="calibPip"></div>
+    <div id="calibCount">0 / 8</div>
+    <button id="calibSkip" class="btn ghost">Skip (use 0ms)</button>
+  </div>
+
+  <!-- Game over -->
+  <div id="gameOver" class="card">
+    <h2>WIPEOUT</h2>
+    <div id="goNew" class="newbest">NEW BEST!</div>
+    <div class="rows">
+      <div><span class="lbl">Score</span><span id="goScore">0</span></div>
+      <div><span class="lbl">Best</span><span id="goBest">0</span></div>
+    </div>
+    <button id="restartBtn" class="btn">↺ RESTART <span class="sub">(R / Space)</span></button>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
