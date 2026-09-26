@@ -1,0 +1,10 @@
+{
+  "start": "2026-08-27",
+  "end": "2026-09-25",
+  "terms": [
+    { "term": "anthropic", "origin": "manual", "current_weight": 1.0, "points": [{ "date": "2026-09-25", "weight": 1.0 }] },
+    { "term": "claude", "origin": "manual", "current_weight": 1.0, "points": [{ "date": "2026-09-25", "weight": 1.0 }] },
+    { "term": "gemini", "origin": "manual", "current_weight": 1.0, "points": [{ "date": "2026-09-25", "weight": 1.0 }] },
+    { "term": "openAI", "origin": "manual", "current_weight": 1.0, "points": [{ "date": "2026-09-25", "weight": 1.0 }] }
+  ]
+}

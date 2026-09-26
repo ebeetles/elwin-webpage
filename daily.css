@@ -1,0 +1,87 @@
+/* ============================================================
+   SIGNAL — live frontend styles, shared by index.html#signal and daily.html.
+   Scoped to .daily / .arch / .sig-* so nothing leaks into the rest of the site.
+   ============================================================ */
+
+/* Author rules like `.doc{display:flex}` would otherwise override the UA [hidden] rule,
+   and the fail-quiet behaviour depends on `hidden` actually hiding things. */
+[hidden]{display:none!important}
+
+.daily, .arch{
+  /* Site --muted (#8A7E6C) is ~3.2:1 on paper — too low for this section's small text.
+     #675C4B is ≥4.95:1 on --paper, --paper-2 and --paper-3 (WCAG AA). */
+  --daily-muted:#675C4B;
+}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ---------- homepage section ---------- */
+/* Scrolls normally instead of pinning: its height depends on live data, and a pinned doc
+   taller than the viewport would hide its tail under the next section. */
+.doc.daily{position:relative}
+.daily-crumb-note{color:var(--daily-muted)}
+.daily-pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:10px;vertical-align:1px;animation:dailyPulse 2.2s ease-out infinite}
+@keyframes dailyPulse{
+  0%{box-shadow:0 0 0 0 rgba(23,99,92,.45)}
+  70%{box-shadow:0 0 0 7px rgba(23,99,92,0)}
+  100%{box-shadow:0 0 0 0 rgba(23,99,92,0)}
+}
+
+.daily-panel{margin-top:30px;max-width:760px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);box-shadow:0 1px 0 var(--line-soft)}
+.daily-bar{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid var(--line-soft);font-family:var(--mono);font-size:11px;color:var(--daily-muted)}
+.daily-req{font-family:var(--mono);font-size:11px}
+.daily-meta{color:var(--accent);font-weight:500}
+.daily-title{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--daily-muted);padding:16px 18px 2px}
+.daily-more{display:block;padding:12px 18px;border-top:1px solid var(--line-soft);font-family:var(--mono);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent)}
+.daily-more:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- item list (homepage + archive) ---------- */
+.daily-list{list-style:none;margin:0;padding:0 18px;counter-reset:daily}
+.daily-item{position:relative;padding:14px 0 14px 34px;border-bottom:1px solid var(--line-soft);counter-increment:daily}
+.daily-item:last-child{border-bottom:0}
+.daily-item::before{content:counter(daily,decimal-leading-zero);position:absolute;left:0;top:17px;font-family:var(--mono);font-size:11px;color:var(--daily-muted)}
+.daily-head{font-family:var(--sans);font-weight:500;font-size:clamp(15px,1.3vw,17px);line-height:1.4;color:var(--ink);overflow-wrap:anywhere;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+a.daily-head:hover{color:var(--accent);text-decoration-color:var(--accent)}
+.daily-sub{margin-top:6px;font-family:var(--mono);font-size:11px;color:var(--daily-muted);overflow-wrap:anywhere}
+.daily-src{color:var(--ink)}
+.daily-why{margin-top:3px;font-family:var(--mono);font-size:11px;line-height:1.5;color:var(--daily-muted);overflow-wrap:anywhere}
+
+/* ---------- sidebar entry ---------- */
+.tree a.file.live .dot{background:var(--accent)}
+.live-tag{margin-left:auto;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:1px 5px}
+
+/* ---------- interest chart (daily.html) ---------- */
+.sig-chart, .sig-legend{
+  /* Categorical order validated with the dataviz palette checker on --paper-3:
+     all hard checks pass; slots 2/4/5 are <3:1 vs the surface, so series are always
+     backed by a legend with values and a table view. Declared on both the chart and its
+     (sibling) legend so the keys resolve the same colours. */
+  --s1:#0a8a7a; --s2:#eb6834; --s3:#2a78d6; --s4:#eda100;
+  --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7; --s8:#e34948;
+}
+.sig-chart{position:relative;margin-top:18px;outline:none;touch-action:pan-y}
+.sig-chart:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:4px}
+.sig-chart svg{display:block;width:100%;overflow:visible}
+.sig-chart .axis{font-family:var(--mono);font-size:10px;fill:var(--daily-muted)}
+.sig-chart .dlabel{font-family:var(--mono);font-size:11px;fill:var(--ink)}
+.sig-tip{position:absolute;top:0;min-width:150px;max-width:240px;pointer-events:none;background:var(--ink);color:var(--paper-3);border-radius:var(--radius);padding:9px 11px;font-family:var(--mono);font-size:11px;line-height:1.45;box-shadow:0 10px 30px rgba(42,35,28,.25);z-index:2}
+.sig-tip .tip-date{color:#CFC5B4;margin-bottom:5px}
+.sig-tip .tip-row{display:flex;align-items:center;gap:8px}
+.sig-tip .tip-key{width:12px;height:2px;border-radius:1px;flex:none}
+.sig-tip .tip-val{font-weight:600;min-width:28px}
+.sig-tip .tip-term{color:#CFC5B4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.sig-legend{list-style:none;display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;padding:0;font-family:var(--mono);font-size:11px;color:var(--ink)}
+.sig-legend li{display:flex;align-items:center;gap:7px}
+.sig-legend .key{width:14px;height:2px;border-radius:1px;flex:none}
+.sig-legend .key.dashed{height:0;border-top:2px dashed var(--muted);background:none}
+.sig-legend .val{color:var(--daily-muted)}
+
+.sig-table{margin-top:14px;font-family:var(--mono);font-size:11px}
+.sig-table summary{cursor:pointer;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;width:max-content}
+.sig-table .tbl-wrap{overflow-x:auto;margin-top:10px}
+.sig-table table{border-collapse:collapse;min-width:100%}
+.sig-table th,.sig-table td{text-align:left;padding:7px 14px 7px 0;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+.sig-table th{font-weight:500;color:var(--daily-muted);text-transform:uppercase;letter-spacing:.06em;font-size:10px}
+.sig-table td.num{text-align:right;padding-right:18px}
+
+@media(prefers-reduced-motion:reduce){.daily-pulse{animation:none}}
